@@ -58,14 +58,14 @@
   */ 
 #define USBD_VID     0x483
 #define USBD_LANGID_STRING     1033
-#define USBD_MANUFACTURER_STRING     "STMicroelectronics"
+#define USBD_MANUFACTURER_STRING     (uint8_t*)"STMicroelectronics"
 #define USBD_PID_FS     0x57FF
-#define USBD_PRODUCT_STRING_FS     "STM32 PPM-USB Adapter"
+#define USBD_PRODUCT_STRING_FS     (uint8_t*)"STM32 PPM-USB Adapter"
 /* USER CODE BEGIN SERIALNUMBER_STRING_FS */
-#define USBD_SERIALNUMBER_STRING_FS     "00000000001A"
+#define USBD_SERIALNUMBER_STRING_FS     (uint8_t*)"00000000001A"
 /* USER CODE END SERIALNUMBER_STRING_FS */
-#define USBD_CONFIGURATION_STRING_FS     "HID Config"
-#define USBD_INTERFACE_STRING_FS     "HID Interface"
+#define USBD_CONFIGURATION_STRING_FS    (uint8_t*)"HID Config"
+#define USBD_INTERFACE_STRING_FS     (uint8_t*)"HID Interface"
 
 /**
   * @}

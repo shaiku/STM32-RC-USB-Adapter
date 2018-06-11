@@ -43,8 +43,8 @@ TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-uint16_t captured_value[8] = { 0 };
-uint16_t rc_data[5] = { 0 };
+uint16_t captured_value[14] = { 0 };
+uint16_t rc_data[9] = { 0 };
 uint8_t pointer = 0;
 uint8_t data_ready = 0;
 /* USER CODE END PV */
@@ -62,42 +62,43 @@ static void MX_TIM1_Init(void);
 /* USER CODE BEGIN 0 */
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
-//	asm("NOP");
-//	asm("NOP");
-//	asm("NOP");
-//	asm("NOP");
-//	asm("NOP");
-//	asm("NOP");
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
-
 	uint8_t i;
 	uint16_t temp;
+	// Get pulsewidth in units of 1/(72MHz/71) = 986ns
 	temp = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
-	if ((temp > 5000) && (!data_ready)) {
+	// Start of fram is > 2ms.  Let's call it 3ms/986ns = 3043
+	// Data ranges from 0.7ms to 1.7ms.
+	if ((temp > 3043) && (!data_ready)) {
 		pointer = 0;
-		for (i = 0; i < 4; i++) {
+		// First 8 channels are analog sticks, pots, etc.
+		for (i = 0; i < 8; i++) {
 			if (captured_value[i] < 1000)
 				captured_value[i] = 1000;
 			else if (captured_value[i] > 2000)
 				captured_value[i] = 2000;
 			rc_data[i] = captured_value[i] - 1000;
 		};
-		rc_data[4] = 0;
-		if (captured_value[4] > 1500)
-			rc_data[4] |= (1 << 4);
-		if (captured_value[5] > 1500)
-			rc_data[4] |= (1 << 5);
-		if (captured_value[6] > 1500)
-			rc_data[4] |= (1 << 6);
-		if (captured_value[7] > 1500)
-			rc_data[4] |= (1 << 7);
+		// Initialize buttons to off
+		rc_data[8] = 0;
+		if (captured_value[8] > 1500)
+			rc_data[8] |= (1 << 0);
+		if (captured_value[9] > 1500)
+			rc_data[8] |= (1 << 1);
+		if (captured_value[10] > 1500)
+			rc_data[8] |= (1 << 2);
+		if (captured_value[11] > 1500)
+			rc_data[8] |= (1 << 3);
+		if (captured_value[12] > 1500)
+			rc_data[8] |= (1 << 4);
+		if (captured_value[13] > 1500)
+			rc_data[8] |= (1 << 5);
 		data_ready = 1;
 	} else {
 		captured_value[pointer] = temp;
 		pointer++;
 	}
-	if (pointer == 8)
+	// Collect 14 channels of information
+	if (pointer == sizeof(captured_value) / sizeof(captured_value[0]))
 		pointer = 0;
 }
 
@@ -137,7 +138,7 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 		if (data_ready) {
-			USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*) rc_data, 10);
+			USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*) rc_data, sizeof(rc_data));
 			data_ready = 0;
 		}
 	}
