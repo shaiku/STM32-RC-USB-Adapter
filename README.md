@@ -1,4 +1,5 @@
-# STM32F1 (http://wiki.stm32duino.com/index.php?title=Blue_Pill) Radio Control USB adapter for Turnigy 9x, OpenTX 14CH PPMSim.
+# STM32F1 Radio Control USB adapter for Turnigy 9x
+I use this board: http://wiki.stm32duino.com/index.php?title=Blue_Pill
 
 Allows Turnigy 9x with OpenTX firmware to connecto a PC as a USB HID game controller.
 All switches, knobs, and sticks are activated.
